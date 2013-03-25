@@ -10,9 +10,9 @@
 		 SETTINGS
 *************************/
 define('HOSTNAME', 'localhost'); // Server Hostname
-define('UNAME', 'root'); // Database Username
-define('PASS', 'toor'); // Database Password
-define('DBNAME', 'accouting'); // Database Name
+define('UNAME', 'uname'); // Database Username
+define('PASS', 'pass'); // Database Password
+define('DBNAME', 'dbname'); // Database Name
 
 /************************
 		  SYSTEM
@@ -84,7 +84,7 @@ class DB
 			self::query("INSERT INTO $table (`".implode('`,`', $column)."`) VALUE (".implode(',', $data).")");
 		}
 	}
-	public static function update($array, $table, $id = '')
+	public static function update($array, $table, $id = FALSE, $where = FALSE)
 	{
 		if(isset($array[0]))
 		{
@@ -95,7 +95,14 @@ class DB
 				{
 					$update[] .= "$column = '$data'";
 				}
-				self::query("UPDATE $table SET ".implode(', ', $onupdate)." WHERE id = '$id'");
+				if($id != FALSE && $where == FALSE)
+				{
+					echo "UPDATE $table SET ".implode(', ', $update)." WHERE id = '$id'";
+				}
+				else
+				{
+					echo "UPDATE $table SET ".implode(', ', $update)." WHERE $where";
+				}
 				unset($update);
 				}
 		}
@@ -106,7 +113,14 @@ class DB
 			{
 				$update[] .= "$column = '$data'";
 			}
-			self::query("UPDATE $table SET ".implode(', ', $onupdate)." WHERE id = '$id'");
+			if($id != FALSE && $where == FALSE)
+			{
+				echo "UPDATE $table SET ".implode(', ', $update)." WHERE id = '$id'";
+			}
+			else
+			{
+				echo "UPDATE $table SET ".implode(', ', $update)." WHERE $where";
+			}
 		}
 	}
 	public static function delete($table, $id = FALSE, $where = FALSE)
