@@ -53,7 +53,7 @@ class DB
 				$temp[] = $rows;
 			}
 		}
-		return $temp;
+		if(isset($temp)) return $temp; else return false;
 	}
 	public static function insert($array, $table)
 	{
