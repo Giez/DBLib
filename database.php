@@ -97,11 +97,11 @@ class DB
 				}
 				if($id != FALSE && $where == FALSE)
 				{
-					echo "UPDATE $table SET ".implode(', ', $update)." WHERE id = '$id'";
+					self::query("UPDATE $table SET ".implode(', ', $update)." WHERE id = '$id'");
 				}
 				else
 				{
-					echo "UPDATE $table SET ".implode(', ', $update)." WHERE $where";
+					self::query("UPDATE $table SET ".implode(', ', $update)." WHERE $where");
 				}
 				unset($update);
 				}
@@ -115,11 +115,11 @@ class DB
 			}
 			if($id != FALSE && $where == FALSE)
 			{
-				echo "UPDATE $table SET ".implode(', ', $update)." WHERE id = '$id'";
+				self::query("UPDATE $table SET ".implode(', ', $update)." WHERE id = '$id'");
 			}
 			else
 			{
-				echo "UPDATE $table SET ".implode(', ', $update)." WHERE $where";
+				self::query("UPDATE $table SET ".implode(', ', $update)." WHERE $where");
 			}
 		}
 	}
