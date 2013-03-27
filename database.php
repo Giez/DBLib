@@ -35,6 +35,7 @@ class DB
 		{
 			die($query);
 		}
+		unset($query, $temp, $die); // Free up memory, tested
 	}
 	public static function get($query, $method = 'array', $one = FALSE)
 	{
@@ -54,6 +55,7 @@ class DB
 			}
 		}
 		if(isset($temp) && $one == FALSE) return $temp; elseif(isset($temp) && $one == TRUE) return $temp[0]; else return false;
+		unset($method, $one, $query, $rows, $temp); // Free up memory, tested
 	}
 	public static function insert($array, $table)
 	{
@@ -68,7 +70,7 @@ class DB
 					if(! in_array($key, $column)){ $column[] = $key; }
 					if(! in_array($rows, $data)) { $data[] = $rows != '' or $rows != 'null' or $rows != null ? "'$rows'" : 'null'; }
 				}
-				self::query("INSERT INTO $table (".implode(',', $column).") VALUE (".implode(',', $data).")");
+				self::query("INSERT INTO `$table` (`".implode('`,`', $column)."`) VALUE (".implode(',', $data).")");
 				unset($column); unset($data);
 			}
 		}
@@ -81,11 +83,22 @@ class DB
 				if(! in_array($key, $column)){ $column[] = $key; }
 				if(! in_array($rows, $data)) { $data[] = $rows != '' ? "'$rows'" : 'null'; }
 			}
-			self::query("INSERT INTO $table (`".implode('`,`', $column)."`) VALUE (".implode(',', $data).")");
+			self::query("INSERT INTO `$table` (`".implode('`,`', $column)."`) VALUE (".implode(',', $data).")");
 		}
+		unset($arr, $array, $column, $data, $key, $rows, $table); // Free up memory, tested
 	}
 	public static function update($array, $table, $id = FALSE, $where = FALSE)
 	{
+		if(is_array($id))
+		{
+			$colid = $id[0];
+			$dataid = $id[1];
+		}
+		else
+		{
+			$colid = 'id';
+			$dataid = $id;
+		}
 		if(isset($array[0]))
 		{
 			foreach($array as $arr)
@@ -93,15 +106,15 @@ class DB
 				$update = array();
 				foreach ($arr as $column => $data)
 				{
-					$update[] .= "$column = '$data'";
+					$update[] .= "`$column` = '$data'";
 				}
 				if($id != FALSE && $where == FALSE)
 				{
-					self::query("UPDATE $table SET ".implode(', ', $update)." WHERE id = '$id'");
+					print("UPDATE `$table` SET ".implode(', ', $update)." WHERE `$colid` = '$dataid'");
 				}
 				else
 				{
-					self::query("UPDATE $table SET ".implode(', ', $update)." WHERE $where");
+					self::query("UPDATE `$table` SET ".implode(', ', $update)." WHERE $where");
 				}
 				unset($update);
 				}
@@ -111,28 +124,40 @@ class DB
 			$update = array();
 			foreach ($array as $column => $data)
 			{
-				$update[] .= "$column = '$data'";
+				$update[] .= "`$column` = '$data'";
 			}
 			if($id != FALSE && $where == FALSE)
 			{
-				self::query("UPDATE $table SET ".implode(', ', $update)." WHERE id = '$id'");
+				self::query("UPDATE `$table` SET ".implode(', ', $update)." WHERE `$colid` = '$dataid'");
 			}
 			else
 			{
-				self::query("UPDATE $table SET ".implode(', ', $update)." WHERE $where");
+				self::query("UPDATE `$table` SET ".implode(', ', $update)." WHERE $where");
 			}
 		}
+		unset($array, $arr, $colid, $column, $data, $dataid, $id, $table, $update, $where); // Free up memory, tested
 	}
 	public static function delete($table, $id = FALSE, $where = FALSE)
 	{
-		if($id != FALSE && $where == FALSE)
+		if(is_array($id))
 		{
-			self::query("DELETE FROM $table WHERE id = '$id'");
+			$colid = $id[0];
+			$dataid = $id[1];
 		}
 		else
 		{
-			self::query("DELETE FROM $table WHERE $where");
+			$colid = 'id';
+			$dataid = $id;
 		}
+		if($id != FALSE && $where == FALSE)
+		{
+			self::query("DELETE FROM `$table` WHERE `$colid` = '$dataid'");
+		}
+		else
+		{
+			self::query("DELETE FROM `$table` WHERE $where");
+		}
+		unset($id, $colid, $dataid, $where, $table);
 	}
 }
 ?>
