@@ -19,11 +19,19 @@ DBLib is a library that contain such as short-cut normal querying system for PHP
 ?>
 ```
 
-### Get your Query
+### Return your Query
 ```php
 <?php
   DB::query($complicatedQuery, TRUE);
   // Return your absolute query
+?>
+```
+
+### Get Data
+```php
+<?php
+  DB::get('SELECT * FROM mytable', 'method'); // You can use assoc or array as method and it will return all data
+  DB::get('SELECT * FROM mytable order by id DESC', 'method', TRUE); // You will get one data to return
 ?>
 ```
 
