@@ -36,7 +36,7 @@ class DB
 			die($query);
 		}
 	}
-	public static function get($query, $method = 'array')
+	public static function get($query, $method = 'array', $one = FALSE)
 	{
 		$query = self::query($query);
 		if($method == 'array')
@@ -53,7 +53,7 @@ class DB
 				$temp[] = $rows;
 			}
 		}
-		if(isset($temp)) return $temp; else return false;
+		if(isset($temp) && $one == FALSE) return $temp; elseif(isset($temp) && $one == TRUE) return $temp[0]; else return false;
 	}
 	public static function insert($array, $table)
 	{
