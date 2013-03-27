@@ -51,8 +51,11 @@ DBLib is a library that contain such as short-cut normal querying system for PHP
   $data = array(
     'column' => 'data'
   );
+  /* BY ID */
   DB::update($data, 1); // 1 as id number (will using 'id' as default table id)
   DB::update($data, array('tableID', 1)) // tableID as custom table ID, 1 as id number
+  /* USING WHERE */
+  DB::update($data, FALSE, "mycolumn = 'what'")
 ?>
 ```
 
@@ -74,9 +77,10 @@ DBLib is a library that contain such as short-cut normal querying system for PHP
 ### Deleting Record
 ```php
 <?php
+/* BY ID */
   DB::delete('mytable', 1); // 1 as id number (will using 'id' as default table id)
   DB::delete('mytable', array('tableID', 1)) // tableID as custom table ID, 1 as id number); 
-// OR
+/* USING WHERE */
   DB::delete('mytable', FALSE, "mycolumn = 'what'");
 ?>
 ```
