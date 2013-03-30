@@ -37,7 +37,7 @@ class DB
 		}
 		unset($query, $temp, $die); // Free up memory, tested
 	}
-	public static function get($query, $method = 'array', $one = FALSE)
+	public static function get($query, $method = 'array', $result = 'all')
 	{
 		$query = self::query($query);
 		if($method == 'array')
@@ -54,8 +54,8 @@ class DB
 				$temp[] = $rows;
 			}
 		}
-		if(isset($temp) && $one == FALSE) return $temp; elseif(isset($temp) && $one == TRUE) return $temp[0]; else return false;
-		unset($method, $one, $query, $rows, $temp); // Free up memory, tested
+		if(isset($temp) && $result == 'all') return $temp; elseif(isset($temp) && $result == 'one') return $temp[0]; else return false;
+		unset($method, $result, $query, $rows, $temp); // Free up memory, tested
 	}
 	public static function insert($array, $table)
 	{
@@ -68,7 +68,7 @@ class DB
 				foreach($arr as $key => $rows)
 				{
 					if(! in_array($key, $column)){ $column[] = $key; }
-					if(! in_array($rows, $data)) { $data[] = $rows != '' or $rows != 'null' or $rows != null ? "'$rows'" : 'null'; }
+					if(! in_array($rows, $data)) { $data[] = $rows != '' ? "'$rows'" : 'null'; }
 				}
 				self::query("INSERT INTO `$table` (`".implode('`,`', $column)."`) VALUE (".implode(',', $data).")");
 				unset($column); unset($data);
@@ -106,7 +106,8 @@ class DB
 				$update = array();
 				foreach ($arr as $column => $data)
 				{
-					$update[] .= "`$column` = '$data'";
+					$data = $data != '' ? "'$data'" : 'null';
+					$update[] .= "`$column` = $data";
 				}
 				if($id != FALSE && $where == FALSE)
 				{
@@ -124,7 +125,8 @@ class DB
 			$update = array();
 			foreach ($array as $column => $data)
 			{
-				$update[] .= "`$column` = '$data'";
+				$data = $data != '' ? "'$data'" : 'null';
+				$update[] .= "`$column` = $data";
 			}
 			if($id != FALSE && $where == FALSE)
 			{
