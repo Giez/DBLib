@@ -68,7 +68,7 @@ class DB
 				foreach($arr as $key => $rows)
 				{
 					if(! in_array($key, $column)){ $column[] = $key; }
-					if(! in_array($rows, $data)) { $data[] = $rows != '' ? "'$rows'" : 'null'; }
+					if(! in_array($rows, $data)) { $data[] = $rows != '' ? "'".str_replace("'NOW()'", 'NOW()',"'$rows'") : 'null'; }
 				}
 				self::query("INSERT INTO `$table` (`".implode('`,`', $column)."`) VALUE (".implode(',', $data).")");
 				unset($column); unset($data);
@@ -81,7 +81,7 @@ class DB
 			foreach($array as $key => $rows)
 			{
 				if(! in_array($key, $column)){ $column[] = $key; }
-				if(! in_array($rows, $data)) { $data[] = $rows != '' ? "'$rows'" : 'null'; }
+				if(! in_array($rows, $data)) { $data[] = $rows != '' ? str_replace("'NOW()'", 'NOW()',"'$rows'") : 'null'; }
 			}
 			self::query("INSERT INTO `$table` (`".implode('`,`', $column)."`) VALUE (".implode(',', $data).")");
 		}
@@ -107,6 +107,7 @@ class DB
 				foreach ($arr as $column => $data)
 				{
 					$data = $data != '' ? "'$data'" : 'null';
+					$data = str_replace("'NOW()'", 'NOW()', $data); // if using NOW() function
 					$update[] .= "`$column` = $data";
 				}
 				if($id != FALSE && $where == FALSE)
@@ -126,6 +127,7 @@ class DB
 			foreach ($array as $column => $data)
 			{
 				$data = $data != '' ? "'$data'" : 'null';
+				$data = str_replace("'NOW()'", 'NOW()', $data); // if using NOW() function
 				$update[] .= "`$column` = $data";
 			}
 			if($id != FALSE && $where == FALSE)
@@ -160,6 +162,11 @@ class DB
 			self::query("DELETE FROM `$table` WHERE $where");
 		}
 		unset($id, $colid, $dataid, $where, $table);
+	}
+	
+	public static function dd($willDump)
+	{
+		die(var_dump($willDump));
 	}
 }
 ?>
