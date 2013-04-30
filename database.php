@@ -37,8 +37,10 @@ class DB
 		}
 		unset($query, $temp, $die); // Free up memory, tested
 	}
-	public static function get($query, $method = 'array')
+	public static function get($query, $method = 'array', $dump = false)
 	{
+		if($dump) DB::dd($query);
+		
 		$column = array(
 			'count' => substr_count(stristr($query, 'FROM', true), ','),
 			'name' => str_replace(' ', '', str_replace('SELECT', '', stristr($query, 'FROM', true)))
