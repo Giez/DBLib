@@ -1,6 +1,6 @@
 <?php
 /* 
-	1. Content and Idea by : Anggie Aziz, all rights accepted. Copy 2013;
+	1. Content and Idea by : Anggie Aziz, Copy 2013;
 	2. Leave this at the top to keep this script stil exists;
 	3. Contact me for suggestions and support : me@anggieaziz;
 	Git this for more update : https://github.com/Giez/DBLib.git
@@ -37,8 +37,12 @@ class DB
 		}
 		unset($query, $temp, $die); // Free up memory, tested
 	}
-	public static function get($query, $method = 'array', $result = 'all')
+	public static function get($query, $method = 'array')
 	{
+		$column = array(
+			'count' => substr_count(stristr($query, 'FROM', true), ','),
+			'name' => str_replace(' ', '', str_replace('SELECT', '', stristr($query, 'FROM', true)))
+		);
 		$query = self::query($query);
 		if($method == 'array')
 		{
@@ -54,8 +58,33 @@ class DB
 				$temp[] = $rows;
 			}
 		}
-		if(isset($temp) && $result == 'all') return $temp; elseif(isset($temp) && $result == 'one') return $temp[0]; else return false;
-		unset($method, $result, $query, $rows, $temp); // Free up memory, tested
+		elseif($method == 'one')
+		{
+			$i = 0;
+			// Expecting number of column should be shown
+			if($column['count'] > 0 or $column['name'] == '*')
+			{
+				while($rows = mysql_fetch_assoc($query))
+				{
+					if($i>0) break;
+					$temp = $rows;
+					$i++;
+				}
+			}
+			elseif($column['count'] == 0 and $column['name'] != '*')
+			{
+				while($rows = mysql_fetch_array($query))
+				{
+					if($i>0) break;
+					$temp = $rows;
+					$i++;
+				}
+				$temp = $temp[$column['name']]; // Return the result as requested single column
+			}
+		}
+		if(isset($temp)) return $temp;
+			else return false;
+		unset($column['count'], $method, $result, $query, $rows, $temp); // Free up memory, tested
 	}
 	public static function insert($array, $table)
 	{
@@ -164,9 +193,15 @@ class DB
 		unset($id, $colid, $dataid, $where, $table);
 	}
 	
-	public static function dd($willDump)
+	public static function dd()
 	{
-		die(var_dump($willDump));
+		$numargs = func_num_args();
+		$arguments = func_get_args();
+		for ($i = 0; $i < $numargs; $i++) 
+		{
+			var_dump($arguments[$i]);
+		}
+		die();
 	}
 }
 ?>
