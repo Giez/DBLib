@@ -9,8 +9,8 @@ DBLib is a library that contain such as short-cut normal querying system for PHP
 - Simpicity to doing Insert and Update record.
 - Support multiple insert and Update record.
 - Easy to delete, you want delete by ID? Or what?
-- Getting one row data is now smarter! It'll follow your query now ;)
-- Die Dumping with unlimited parameter! (faster then u write var_dump(), then die()).
+- Getting one row data is now smarter! It'll follow your query now.
+- Die Dumping with unlimited parameter! (faster than u write var_dump(), then die()).
 
 ## Using
 
