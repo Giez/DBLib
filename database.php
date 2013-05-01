@@ -1,9 +1,10 @@
 <?php
 /* 
-	1. Content and Idea by : Anggie Aziz, Copy 2013;
+	1. Content and Idea by : Anggie Aziz, Copyright (c) 2013;
 	2. Leave this at the top to keep this script stil exists;
 	3. Contact me for suggestions and support : me@anggieaziz;
 	Git this for more update : https://github.com/Giez/DBLib.git
+	This content is released under the MIT License (http://opensource.org/licenses/MIT).
 */
 
 /************************
