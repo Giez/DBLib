@@ -86,7 +86,7 @@ class DB
 			}
 		}
 		if(isset($temp)) return $temp;
-			else return false;
+			else return null;
 		unset($column['count'], $method, $result, $query, $rows, $temp); // Free up memory, tested
 	}
 	public static function insert($array, $table)
