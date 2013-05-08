@@ -82,7 +82,10 @@ class DB
 					$temp = $rows;
 					$i++;
 				}
-				$temp = $temp[$column['name']]; // Return the result as requested single column
+				if(isset($temp))
+					$temp = $temp[$column['name']]; // Return the result as requested single column
+				else
+					$temp = null;
 			}
 		}
 		if(isset($temp)) return $temp;
