@@ -66,24 +66,12 @@ class DB
 			$i = 0;
 			// Expecting number of column should be shown
 			if($column['count'] > 0 or $column['name'] == '*')
-			{
-				while($rows = mysql_fetch_assoc($query))
-				{
-					if($i>0) break;
-					$temp = $rows;
-					$i++;
-				}
-			}
+				$rows = mysql_fetch_assoc($query);
 			elseif($column['count'] == 0 and $column['name'] != '*')
 			{
-				while($rows = mysql_fetch_array($query))
-				{
-					if($i>0) break;
-					$temp = $rows;
-					$i++;
-				}
+				$rows = mysql_fetch_row($query);
 				if(isset($temp))
-					$temp = $temp[$column['name']]; // Return the result as requested single column
+					$temp = $temp[0]; // Return the result as requested single column
 				else
 					$temp = null;
 			}
