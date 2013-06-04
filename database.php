@@ -47,8 +47,10 @@ class DB
 			'name' => str_replace(' ', '', str_replace('SELECT', '', stristr($query, 'FROM', true)))
 		);
 		$query = self::query($query);
+		
 		if($method == 'array')
 		{
+			// Return array (string and integer)
 			while($rows = mysql_fetch_array($query))
 			{
 				$temp[] = $rows;
@@ -56,14 +58,22 @@ class DB
 		}
 		elseif($method == 'assoc')
 		{
+			// Return array (string)
 			while($rows = mysql_fetch_assoc($query))
+			{
+				$temp[] = $rows;
+			}
+		}
+			// Return array (integer)
+		elseif($method == 'row')
+		{
+			while($rows = mysql_fetch_row($query))
 			{
 				$temp[] = $rows;
 			}
 		}
 		elseif($method == 'one')
 		{
-			$i = 0;
 			// Expecting number of column should be shown
 			if($column['count'] > 0 or $column['name'] == '*')
 				$temp = mysql_fetch_assoc($query);
