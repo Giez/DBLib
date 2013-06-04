@@ -32,7 +32,7 @@ DBLib is a library that contain such as short-cut normal querying system for PHP
 ### Get Data
 ```php
 <?php
-  DB::get('SELECT * FROM mytable', 'method'); // You can use 'assoc' or 'array' as method or also 'one' for one record of data returning. 
+  DB::get('SELECT * FROM mytable', 'method'); // You can use 'row' or 'assoc' or 'array' as method or also 'one' for one record (or column*) of data returning. 
   $foov = DB::get('SELECT foo FROM mytable order by id DESC', 'one'); // You will get last ID of foo on your $foov variable. 
 ?>
 ```
