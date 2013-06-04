@@ -1,5 +1,5 @@
-#[DBLib] - MySQL Database Library System
-DBLib is a library that contain such as short-cut normal querying system for PHP-Mysql System, you can query, get data from table, insert, update and delete with less line and character of code. It also using static class to make everthing faster and easy to use but still powerful.
+#[MyLib] - MySQL Database Library System
+MyLib is a library that contain such as short-cut normal querying system for PHP-Mysql System, you can query, get data from table, insert, update and delete with less line and character of code. It also using static class to make everthing faster and easy to use but still powerful.
 
 ## Feature Overview
 
@@ -93,3 +93,6 @@ DBLib is a library that contain such as short-cut normal querying system for PHP
   DB::dd($query, $value, 'wow', 1, 2, 3); // Die Dumping with unlimited parameter.
 ?>
 ```
+
+## License
+Released under the [MIT license](http://www.opensource.org/licenses/MIT).
