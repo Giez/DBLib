@@ -14,6 +14,13 @@ MyLib is a library that contain such as short-cut normal querying system for PHP
 
 ## Using
 
+### Connecting to Database (Not Exactly Required)
+```php
+<?php
+  DB::connect();
+?>
+```
+
 ### Standard Query
 ```php
 <?php
@@ -95,7 +102,7 @@ MyLib is a library that contain such as short-cut normal querying system for PHP
 ```
 
 ## Note
-- If no stristr() function exists in your PHP you can use this at line 46 and 47 (replacing : stristr($query, 'FROM', true))  : substr($query, 0, stripos($query, 'FROM'))
+- If no stristr() function exists in your PHP you can use this at line 46 and 47 (replacing : stristr($query, 'FROM', true))  : substr($query, 0, stripos($query, 'FROM')).
 
 ## License
 Released under the [MIT license](http://www.opensource.org/licenses/MIT).
