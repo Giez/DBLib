@@ -20,14 +20,31 @@ define('DBNAME', 'dbname'); // Database Name
 *************************/
 class DB
 {
+
+	/**
+	 * Connecting to Database.
+	 * @return void
+	 */
 	public static function connect()
 	{
-		if( mysql_connect(HOSTNAME, UNAME, PASS)) mysql_select_db(DBNAME);
+		if( mysql_connect(HOSTNAME, UNAME, PASS)) 
+		{
+			mysql_select_db(DBNAME);
+		}
 	}
-	public static function query($query, $die = FALSE)
+
+	/**
+	 * Crucial / Basic function to query.
+	 * @param string $query 
+	 * @param boolean $die 
+	 * @return object
+	 */
+	public static function query($query, $die = false)
 	{
+		// Connect first
 		self::connect();
-		if($die == FALSE)
+
+		if($die == false)
 		{
 			$temp = mysql_query($query) or die(mysql_error().'<br /> Query :'.$query);
 			return $temp;
@@ -38,9 +55,18 @@ class DB
 		}
 		unset($query, $temp, $die); // Free up memory, tested
 	}
+
+	/**
+	 * Getting based on query and other parameter.
+	 * @param string $query 
+	 * @param string $method 
+	 * @param boolean $dump 
+	 * @return array|string
+	 */
 	public static function get($query, $method = 'array', $dump = false)
 	{
-		if($dump) DB::dd($query);
+		if($dump) 
+			self::dd($query);
 		
 		$column = array(
 			'count' => substr_count(stristr($query, 'FROM', true), ','),
@@ -48,26 +74,10 @@ class DB
 		);
 		$query = self::query($query);
 		
-		if($method == 'array')
+		if($method == 'row' or $method == 'assoc' or $method == 'array')
 		{
-			// Return array (string and integer)
-			while($rows = mysql_fetch_array($query))
-			{
-				$temp[] = $rows;
-			}
-		}
-		elseif($method == 'assoc')
-		{
-			// Return array (string)
-			while($rows = mysql_fetch_assoc($query))
-			{
-				$temp[] = $rows;
-			}
-		}
-			// Return array (integer)
-		elseif($method == 'row')
-		{
-			while($rows = mysql_fetch_row($query))
+			$method = 'mysql_fetch_'.$method;
+			while($rows = $method($query))
 			{
 				$temp[] = $rows;
 			}
@@ -90,8 +100,16 @@ class DB
 			else return null;
 		unset($column['count'], $method, $result, $query, $rows, $temp); // Free up memory, tested
 	}
+
+	/**
+	 * Insert data to database.
+	 * @param array $array 
+	 * @param string $table 
+	 * @return array|integer
+	 */
 	public static function insert($array, $table)
 	{
+		$insID = null;
 		if(isset($array[0]))
 		{
 			foreach($array as $arr)
@@ -105,6 +123,7 @@ class DB
 				}
 				self::query("INSERT INTO `$table` (`".implode('`,`', $column)."`) VALUE (".implode(',', $data).")");
 				unset($column); unset($data);
+				$insID[] = mysql_insert_id();
 			}
 		}
 		else
@@ -117,10 +136,21 @@ class DB
 				if(! in_array($rows, $data)) { $data[] = $rows != '' ? str_replace("'NOW()'", 'NOW()',"'$rows'") : 'null'; }
 			}
 			self::query("INSERT INTO `$table` (`".implode('`,`', $column)."`) VALUE (".implode(',', $data).")");
+			$insID = mysql_insert_id();
 		}
-		unset($arr, $array, $column, $data, $key, $rows, $table); // Free up memory, tested
+		return $insID;
+		unset($arr, $array, $column, $data, $key, $rows, $table, $insID); // Free up memory, tested
 	}
-	public static function update($array, $table, $id = FALSE, $where = FALSE)
+
+	/**
+	 * Update data from database.
+	 * @param array $array 
+	 * @param string $table 
+	 * @param integer $id 
+	 * @param string $where 
+	 * @return void
+	 */
+	public static function update($array, $table, $id = null, $where = null)
 	{
 		if(is_array($id))
 		{
@@ -143,9 +173,9 @@ class DB
 					$data = str_replace("'NOW()'", 'NOW()', $data); // if using NOW() function
 					$update[] .= "`$column` = $data";
 				}
-				if($id != FALSE && $where == FALSE)
+				if($id != null && $where == null)
 				{
-					print("UPDATE `$table` SET ".implode(', ', $update)." WHERE `$colid` = '$dataid'");
+					self::query("UPDATE `$table` SET ".implode(', ', $update)." WHERE `$colid` = '$dataid'");
 				}
 				else
 				{
@@ -163,7 +193,7 @@ class DB
 				$data = str_replace("'NOW()'", 'NOW()', $data); // if using NOW() function
 				$update[] .= "`$column` = $data";
 			}
-			if($id != FALSE && $where == FALSE)
+			if($id != null && $where == null)
 			{
 				self::query("UPDATE `$table` SET ".implode(', ', $update)." WHERE `$colid` = '$dataid'");
 			}
@@ -174,7 +204,15 @@ class DB
 		}
 		unset($array, $arr, $colid, $column, $data, $dataid, $id, $table, $update, $where); // Free up memory, tested
 	}
-	public static function delete($table, $id = FALSE, $where = FALSE)
+
+	/**
+	 * Delete data from database.
+	 * @param string $table 
+	 * @param integer $id 
+	 * @param string $where 
+	 * @return void
+	 */
+	public static function delete($table, $id = null, $where = null)
 	{
 		if(is_array($id))
 		{
@@ -186,7 +224,7 @@ class DB
 			$colid = 'id';
 			$dataid = $id;
 		}
-		if($id != FALSE && $where == FALSE)
+		if($id != null && $where == null)
 		{
 			self::query("DELETE FROM `$table` WHERE `$colid` = '$dataid'");
 		}
@@ -197,6 +235,10 @@ class DB
 		unset($id, $colid, $dataid, $where, $table);
 	}
 	
+	/**
+	 * Die and Dump all in parameter.
+	 * @return void
+	 */
 	public static function dd()
 	{
 		$numargs = func_num_args();
@@ -207,5 +249,5 @@ class DB
 		}
 		die();
 	}
+
 }
-?>
