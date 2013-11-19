@@ -50,7 +50,8 @@ MyLib is a library that contain such as short-cut normal querying system for PHP
   $data = array(
     'column' => 'data'
   );
-  DB::insert($data, 'mytable');
+  $insert = DB::insert($data, 'mytable');
+  var_dump($insert); // Will return the last Insert ID. If multiple insert, it will return an array of last Insert ID.
 ?>
 ```
 
