@@ -20,6 +20,7 @@ define('DBNAME', 'dbname'); // Database Name
 *************************/
 class DB
 {
+	public static $dumpQuery = false;
 
 	/**
 	 * Connecting to Database.
@@ -44,6 +45,9 @@ class DB
 		// Connect first
 		self::connect();
 
+		if(self::$dumpQuery === true)
+			DB::dd($query);
+
 		if($die == false)
 		{
 			$temp = mysql_query($query) or die(mysql_error().'<br /> Query :'.$query);
@@ -63,17 +67,16 @@ class DB
 	 * @param boolean $dump 
 	 * @return array|string
 	 */
-	public static function get($query, $method = 'array', $dump = false)
-	{
-		if($dump) 
-			self::dd($query);
-		
+	public static function get($query, $method = 'array')
+	{		
+		// Getting information from the SELECT statement
 		$column = array(
 			'count' => substr_count(stristr($query, 'FROM', true), ','),
 			'name' => str_replace(' ', '', str_replace('SELECT', '', stristr($query, 'FROM', true)))
 		);
 		$query = self::query($query);
 		
+		// Fetching data
 		if($method == 'row' or $method == 'assoc' or $method == 'array')
 		{
 			$method = 'mysql_fetch_'.$method;
@@ -93,11 +96,14 @@ class DB
 				if(isset($temp))
 					$temp = $temp[0]; // Return the result as requested single column
 				else
-					$temp = null;
+					$temp = false;
 			}
 		}
+
+		// Returning result
 		if(isset($temp)) return $temp;
-			else return null;
+			else return false;
+
 		unset($column['count'], $method, $result, $query, $rows, $temp); // Free up memory, tested
 	}
 
@@ -109,37 +115,46 @@ class DB
 	 */
 	public static function insert($array, $table)
 	{
+		// Prepairing insert ID to null
 		$insID = null;
+
+		// Doing multiple or single insert
 		if(isset($array[0]))
 		{
 			foreach($array as $arr)
 			{
-				$column = array();
-				$data = array();
-				foreach($arr as $key => $rows)
-				{
-					if(! in_array($key, $column)){ $column[] = $key; }
-					if(! in_array($rows, $data)) { $data[] = $rows != '' ? "'".str_replace("'NOW()'", 'NOW()',"'$rows'") : 'null'; }
-				}
-				self::query("INSERT INTO `$table` (`".implode('`,`', $column)."`) VALUE (".implode(',', $data).")");
-				unset($column); unset($data);
-				$insID[] = mysql_insert_id();
+				$insID[] = self::insertAction($arr, $table);
 			}
 		}
 		else
 		{
-			$column = array();
-			$data = array();
-			foreach($array as $key => $rows)
-			{
-				if(! in_array($key, $column)){ $column[] = $key; }
-				if(! in_array($rows, $data)) { $data[] = $rows != '' ? str_replace("'NOW()'", 'NOW()',"'$rows'") : 'null'; }
-			}
-			self::query("INSERT INTO `$table` (`".implode('`,`', $column)."`) VALUE (".implode(',', $data).")");
-			$insID = mysql_insert_id();
+			$insID = self::insertAction($array, $table);
 		}
 		return $insID;
 		unset($arr, $array, $column, $data, $key, $rows, $table, $insID); // Free up memory, tested
+	}
+
+	/**
+	 * Action for Insert Function
+	 * @param array $arrData 
+	 * @param string $table 
+	 * @return integer
+	 */
+	private static function insertAction($arrData, $table)
+	{
+		$column = array();
+		$data = array();
+
+		// Splitting data and column, also filtering data
+		foreach($arrData as $key => $rows)
+		{
+			if(! in_array($key, $column)){ $column[] = $key; }
+			if(! in_array($rows, $data)) { $data[] = $rows != '' ? str_replace("'NOW()'", 'NOW()',"'$rows'") : 'null'; }
+		}
+		self::query("INSERT INTO `$table` (`".implode('`,`', $column)."`) VALUE (".implode(',', $data).")");
+
+		// Return the inserted ID
+		return mysql_insert_id();
 	}
 
 	/**
@@ -166,43 +181,39 @@ class DB
 		{
 			foreach($array as $arr)
 			{
-				$update = array();
-				foreach ($arr as $column => $data)
-				{
-					$data = $data != '' ? "'$data'" : 'null';
-					$data = str_replace("'NOW()'", 'NOW()', $data); // if using NOW() function
-					$update[] .= "`$column` = $data";
-				}
-				if($id != null && $where == null)
-				{
-					self::query("UPDATE `$table` SET ".implode(', ', $update)." WHERE `$colid` = '$dataid'");
-				}
-				else
-				{
-					self::query("UPDATE `$table` SET ".implode(', ', $update)." WHERE $where");
-				}
-				unset($update);
-				}
+				self::updateAction($arr, $table);
+			}
 		}
 		else
 		{
-			$update = array();
-			foreach ($array as $column => $data)
-			{
-				$data = $data != '' ? "'$data'" : 'null';
-				$data = str_replace("'NOW()'", 'NOW()', $data); // if using NOW() function
-				$update[] .= "`$column` = $data";
-			}
-			if($id != null && $where == null)
-			{
-				self::query("UPDATE `$table` SET ".implode(', ', $update)." WHERE `$colid` = '$dataid'");
-			}
-			else
-			{
-				self::query("UPDATE `$table` SET ".implode(', ', $update)." WHERE $where");
-			}
+			self::updateAction($array, $table);
 		}
 		unset($array, $arr, $colid, $column, $data, $dataid, $id, $table, $update, $where); // Free up memory, tested
+	}
+
+	/**
+	 * Action for Update Function
+	 * @param array $arrData 
+	 * @param string $table 
+	 * @return void
+	 */
+	private static function updateAction($arrData, $table)
+	{
+		$update = array();
+		foreach ($arrData as $column => $data)
+		{
+			$data = $data != '' ? "'$data'" : 'null';
+			$data = str_replace("'NOW()'", 'NOW()', $data); // if using NOW() function
+			$update[] .= "`$column` = $data";
+		}
+		if($id != null && $where == null)
+		{
+			self::query("UPDATE `$table` SET ".implode(', ', $update)." WHERE `$colid` = '$dataid'");
+		}
+		else
+		{
+			self::query("UPDATE `$table` SET ".implode(', ', $update)." WHERE $where");
+		}
 	}
 
 	/**
