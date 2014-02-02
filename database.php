@@ -181,12 +181,12 @@ class DB
 		{
 			foreach($array as $arr)
 			{
-				self::updateAction($arr, $table);
+				self::updateAction($arr, $table, $colid, $dataid, $where);
 			}
 		}
 		else
 		{
-			self::updateAction($array, $table);
+			self::updateAction($array, $table, $colid, $dataid, $where);
 		}
 		unset($array, $arr, $colid, $column, $data, $dataid, $id, $table, $update, $where); // Free up memory, tested
 	}
@@ -197,7 +197,7 @@ class DB
 	 * @param string $table 
 	 * @return void
 	 */
-	private static function updateAction($arrData, $table)
+	private static function updateAction($arrData, $table, $colid = null, $dataid = null, $where = null)
 	{
 		$update = array();
 		foreach ($arrData as $column => $data)
@@ -206,7 +206,7 @@ class DB
 			$data = str_replace("'NOW()'", 'NOW()', $data); // if using NOW() function
 			$update[] .= "`$column` = $data";
 		}
-		if($id != null && $where == null)
+		if($colid != null && $dataid != null && $where == null)
 		{
 			self::query("UPDATE `$table` SET ".implode(', ', $update)." WHERE `$colid` = '$dataid'");
 		}
