@@ -148,8 +148,8 @@ class DB
 		// Splitting data and column, also filtering data
 		foreach($arrData as $key => $rows)
 		{
-			if(! in_array($key, $column)){ $column[] = $key; }
-			if(! in_array($rows, $data)) { $data[] = $rows != '' ? str_replace("'NOW()'", 'NOW()',"'$rows'") : 'null'; }
+			$column[] = $key;
+			$data[] = $rows != '' ? str_replace("'NOW()'", 'NOW()',"'$rows'") : 'null';
 		}
 		self::query("INSERT INTO `$table` (`".implode('`,`', $column)."`) VALUE (".implode(',', $data).")");
 
