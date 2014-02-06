@@ -163,7 +163,7 @@ class DB
 	 * @param string $table 
 	 * @param integer $id 
 	 * @param string $where 
-	 * @return void
+	 * @return boolean
 	 */
 	public static function update($array, $table, $id = null, $where = null)
 	{
@@ -189,6 +189,7 @@ class DB
 			self::updateAction($array, $table, $colid, $dataid, $where);
 		}
 		unset($array, $arr, $colid, $column, $data, $dataid, $id, $table, $update, $where); // Free up memory, tested
+		return true;
 	}
 
 	/**
@@ -221,7 +222,7 @@ class DB
 	 * @param string $table 
 	 * @param integer $id 
 	 * @param string $where 
-	 * @return void
+	 * @return boolean
 	 */
 	public static function delete($table, $id = null, $where = null)
 	{
@@ -244,6 +245,7 @@ class DB
 			self::query("DELETE FROM `$table` WHERE $where");
 		}
 		unset($id, $colid, $dataid, $where, $table);
+		return true;
 	}
 	
 	/**
