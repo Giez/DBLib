@@ -104,6 +104,16 @@ MyLib is a library that contain such as short-cut normal querying system for PHP
 ?>
 ```
 
+### Escape or Filtering Data
+Supported type to cast is : boolean (or, since PHP 4.2.0, "bool"), integer (or, since PHP 4.2.0, "int"), float (only possible since PHP 4.2.0, for older versions use the deprecated variant "double"), string, array, object, null (since PHP 4.2.0).
+```php
+<?php
+  $data = '1bar'; // Support array of data
+  $data = DB::escape($data, 'integer');
+  DB::dd($data);
+?>
+```
+
 ## Note
 - If no stristr() function exists in your PHP you can use this at line 46 and 47 (replacing : stristr($query, 'FROM', true))  : substr($query, 0, stripos($query, 'FROM')).
 
