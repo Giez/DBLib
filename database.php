@@ -1,6 +1,6 @@
 <?php
 /* 
-	1. Content and Idea by : Anggie Aziz, Copyright (c) 2013;
+	1. by : Anggie Aziz, Copyright (c) 2013;
 	2. Leave this at the top to keep this script stil exists;
 	3. Contact me for suggestions and support : anggieaziz@gmail.com;
 	Fork This : https://github.com/Giez/MyLib
@@ -21,6 +21,7 @@ define('DBNAME', 'dbname'); // Database Name
 class DB
 {
 	public static $dumpQuery = false;
+	public static $dumpType  = 'vd';
 
 	/**
 	 * Connecting to Database.
@@ -38,15 +39,23 @@ class DB
 	 * Crucial / Basic function to query.
 	 * @param string $query 
 	 * @param boolean $die 
-	 * @return object
+	 * @return object|void
 	 */
 	public static function query($query, $die = false)
 	{
 		// Connect first
 		self::connect();
 
-		if(self::$dumpQuery === true)
+		// When you want to echoing query
+		if(self::$dumpQuery === true && self::$dumpType == 'vd')
+		{
 			DB::dd($query);
+		}
+		elseif(self::$dumpQuery === true && self::$dumpType != 'print')
+		{
+			echo '<pre>',print_r($query),'</pre>';
+			die();
+		}
 
 		if($die == false)
 		{
@@ -57,15 +66,13 @@ class DB
 		{
 			die($query);
 		}
-		unset($query, $temp, $die); // Free up memory, tested
 	}
 
 	/**
 	 * Getting based on query and other parameter.
 	 * @param string $query 
 	 * @param string $method 
-	 * @param boolean $dump 
-	 * @return array|string
+	 * @return array|string|boolean
 	 */
 	public static function get($query, $method = 'array')
 	{		
@@ -102,9 +109,7 @@ class DB
 
 		// Returning result
 		if(isset($temp)) return $temp;
-			else return false;
-
-		unset($column['count'], $method, $result, $query, $rows, $temp); // Free up memory, tested
+		else return false;
 	}
 
 	/**
@@ -131,7 +136,6 @@ class DB
 			$insID = self::insertAction($array, $table);
 		}
 		return $insID;
-		unset($arr, $array, $column, $data, $key, $rows, $table, $insID); // Free up memory, tested
 	}
 
 	/**
@@ -161,7 +165,7 @@ class DB
 	 * Update data from database.
 	 * @param array $array 
 	 * @param string $table 
-	 * @param integer $id 
+	 * @param integer|array $id 
 	 * @param string $where 
 	 * @return boolean
 	 */
@@ -188,7 +192,6 @@ class DB
 		{
 			self::updateAction($array, $table, $colid, $dataid, $where);
 		}
-		unset($array, $arr, $colid, $column, $data, $dataid, $id, $table, $update, $where); // Free up memory, tested
 		return true;
 	}
 
@@ -196,6 +199,9 @@ class DB
 	 * Action for Update Function
 	 * @param array $arrData 
 	 * @param string $table 
+	 * @param string $colid 
+	 * @param string|integer $dataid 
+	 * @param string $where 
 	 * @return void
 	 */
 	private static function updateAction($arrData, $table, $colid = null, $dataid = null, $where = null)
@@ -244,7 +250,6 @@ class DB
 		{
 			self::query("DELETE FROM `$table` WHERE $where");
 		}
-		unset($id, $colid, $dataid, $where, $table);
 		return true;
 	}
 	
