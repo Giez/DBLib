@@ -32,6 +32,7 @@ MyLib is a library that contain such as short-cut normal querying system for PHP
 ```php
 <?php
   DB::$dumpQuery = true;
+  DB::$dumpType = 'print'; // Optional, use it when you need print_r to echo query.
   DB::get($complicatedQuery);
   // Return your absolute query
 ?>
