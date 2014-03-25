@@ -268,4 +268,43 @@ class DB
 		die();
 	}
 
+	public static function escape($data, $castType = false)
+	{
+		// Connect when it is not casting
+		if($castType === false)
+			self::connect();
+
+		// Trying to escape some uneeded character or cast it if it need
+		$escaped       = null;
+		if(is_array($data) && ! empty($data))
+		{
+			foreach ($data as $key => $row) 
+			{
+				if($castType === false)
+				{
+					$escaped[$key] = mysql_real_escape_string($row);
+				}
+				else
+				{
+					$escaped[$key] = $row;
+					settype($escaped[$key], $castType);
+				}
+			}
+		}
+		else
+		{
+			if($castType === false)
+			{
+				$escaped = mysql_real_escape_string($data);
+			}
+			else
+			{
+				settype($data, $castType);
+				$escaped = $data;
+			}
+		}
+
+		return $escaped;
+	}
+
 }
