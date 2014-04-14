@@ -64,8 +64,8 @@ MyLib is a library that contain such as short-cut normal querying system for PHP
     'column' => 'data'
   );
   /* BY ID */
-  DB::update($data, 1); // 1 as id number (will using 'id' as default table id)
-  DB::update($data, array('tableID', 1)) // tableID as custom table ID, 1 as id number
+  DB::update($data, 'table_name', 1); // 1 as id number (will using 'id' as default table id)
+  DB::update($data, 'table_name', array('tableID', 1)) // tableID as custom table ID, 1 as id number
   /* USING WHERE */
   DB::update($data, FALSE, "mycolumn = 'what'")
 ?>
@@ -82,7 +82,7 @@ MyLib is a library that contain such as short-cut normal querying system for PHP
       'column' => 'data'
     )
   );
-  // Call here
+  // Insert or Update script here
 ?>
 ```
 
@@ -108,6 +108,12 @@ MyLib is a library that contain such as short-cut normal querying system for PHP
 Supported type to cast is : boolean (or, since PHP 4.2.0, "bool"), integer (or, since PHP 4.2.0, "int"), float (only possible since PHP 4.2.0, for older versions use the deprecated variant "double"), string, array, object, null (since PHP 4.2.0).
 ```php
 <?php
+  // To escape data, same with mysql_real_escape_string
+  $data = "bar'"; // Support array of data
+  $data = DB::escape($data);
+  DB::dd($data);
+
+  // To cast data
   $data = '1bar'; // Support array of data
   $data = DB::escape($data, 'integer');
   DB::dd($data);
